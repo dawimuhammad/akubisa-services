@@ -6,7 +6,7 @@ import (
 
 // Service is doing mapping from struct Input to struct User
 type Service interface {
-	RegisterUserInput(input RegisterUserInput) (User, error)
+	RegisterUser(input RegisterUserInput) (User, error)
 }
 
 type service struct {
@@ -18,7 +18,7 @@ func NewService(repository Repository) *service {
 	return &service{repository}
 }
 
-func (s *service) RegisterUserInput(input RegisterUserInput) (User, error) {
+func (s *service) RegisterUser(input RegisterUserInput) (User, error) {
 	user := User{}
 
 	// mapping struct Input (RegisterUserInput) to struct User
