@@ -13,7 +13,7 @@ type repository struct {
 	db *gorm.DB
 }
 
-// func NewRepository to instance a new variable from struct repository
+// NewRepository to instance a new variable from struct repository
 func NewRepository(db *gorm.DB) *repository {
 	return &repository{db}
 }
