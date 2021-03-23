@@ -5,6 +5,8 @@ import (
 	"bwastartup/user"
 	"net/http"
 
+	"github.com/go-playground/validator/v10"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -27,7 +29,15 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 	err := c.ShouldBindJSON(&input)
 
 	if err != nil {
-		response := helper.APIResponse("Failed to create account!", http.StatusBadRequest, "error", nil)
+		var errors []string
+
+		for _, e := range err.(validator.ValidationErrors) {
+			errors = append(errors, e.Error())
+		}
+
+		errorMessage := gin.H{"error": errors}
+
+		response := helper.APIResponse("Failed to create account!", http.StatusUnprocessableEntity, "error", errorMessage)
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
