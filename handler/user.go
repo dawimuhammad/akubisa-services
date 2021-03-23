@@ -3,7 +3,6 @@ package handler
 import (
 	"bwastartup/helper"
 	"bwastartup/user"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -25,21 +24,21 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 
 	var input user.RegisterUserInput
 
-	fmt.Println("userInput--> ", input)
-
 	err := c.ShouldBindJSON(&input)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, nil)
 	}
 
-	user, err := h.userService.RegisterUser(input)
+	newUser, err := h.userService.RegisterUser(input)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, nil)
 	}
 
-	response := helper.APIResponse("Account has successfully created!", http.StatusOK, "success", user)
+	formatter := user.FormatUser(newUser, "token")
+
+	response := helper.APIResponse("Account has successfully created!", http.StatusOK, "success", formatter)
 
 	c.JSON(http.StatusOK, response)
 }
