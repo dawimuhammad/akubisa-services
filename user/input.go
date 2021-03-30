@@ -7,3 +7,9 @@ type RegisterUserInput struct {
 	Email      string `json:"email" binding:"required,email"`
 	Password   string `json:"password" binding:"required"`
 }
+
+// LoginInput struct represent what we got from the login input on client
+type LoginInput struct {
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required"`
+}

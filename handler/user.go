@@ -50,3 +50,43 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response)
 }
+
+func (h *userHandler) Login(c *gin.Context) {
+	var input user.LoginInput
+
+	err := c.ShouldBindJSON(&input)
+
+	if err != nil {
+		errors := helper.FormatValidationError(err)
+
+		errorMessage := gin.H{"error": errors}
+
+		response := helper.APIResponse("Login Failed!", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	loggedInUser, err := h.userService.Login(input)
+
+	if err != nil {
+		errorMessage := gin.H{"error": err.Error()}
+
+		response := helper.APIResponse("Login Failed!", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	formatter := user.FormatUser(loggedInUser, "token")
+
+	response := helper.APIResponse("Sucessfully Logged In!", http.StatusOK, "success", formatter)
+
+	c.JSON(http.StatusOK, response)
+
+	// flow process of Login API endpoint
+	// client mengirimkan input berupa data email dan password user
+	// input diterima handler
+	// mapping dari input user ke Struct Input
+	// Struct Input dikirimkan ke service
+	// service akan mencari user dengan parameter email yang sama dibantu repository
+	// mencocokkan password berdasarkan data user yang match
+}
