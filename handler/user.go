@@ -90,3 +90,51 @@ func (h *userHandler) Login(c *gin.Context) {
 	// service akan mencari user dengan parameter email yang sama dibantu repository
 	// mencocokkan password berdasarkan data user yang match
 }
+
+func (h *userHandler) CheckEmailAvailability(c *gin.Context) {
+	var input user.CheckEmailInput
+	var metaMessage string = "Email has been registered"
+
+	err := c.ShouldBindJSON(&input)
+
+	if err != nil {
+		errors := helper.FormatValidationError(err)
+
+		errorMessage := gin.H{"error": errors}
+
+		response := helper.APIResponse("Email Checking Failed!", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	isEmailAvailable, err := h.userService.IsEmailAvailable(input)
+
+	if err != nil {
+		errorMessage := gin.H{"error": "Server Error"}
+
+		response := helper.APIResponse("Email Checking Failed!", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	// melakukan wrapping data yang dibutuhkan ke dalam bentuk objek
+	data := gin.H{
+		"is_available": isEmailAvailable,
+	}
+
+	if isEmailAvailable {
+		metaMessage = "Email is available"
+	}
+
+	response := helper.APIResponse(metaMessage, http.StatusOK, "success", data)
+
+	c.JSON(http.StatusOK, response)
+
+	// flow process of check email availability API endpoint
+	// client mengirimkan input berupa email
+	// input diterima handler
+	// mapping dari input user ke Struct Input
+	// Struct Input dikirimkan ke service
+	// service akan memanggil repository (existing) untuk mencari apakah sudah ada user yang menggunakan email tersebut
+	// repository db mencari email berdasarkan parameter input yang disediakan
+}
