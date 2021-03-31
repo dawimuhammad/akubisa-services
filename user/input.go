@@ -13,3 +13,8 @@ type LoginInput struct {
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required"`
 }
+
+// CheckEmailInput struct represent what we got from the check email availability process
+type CheckEmailInput struct {
+	Email string `json:"email" binding:"required,email"`
+}
